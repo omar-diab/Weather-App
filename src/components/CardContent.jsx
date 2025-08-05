@@ -16,6 +16,8 @@ import 'moment/dist/locale/ar';
 
 import { locations } from "../utils/Locations";
 
+const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+
 const CardContent = () => {
   const { t, i18n } = useTranslation();
 
@@ -36,7 +38,7 @@ const CardContent = () => {
 
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=a705b3908e57ff99033e3b083d5b6c10`,
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`,
         { cancelToken: cancelTokenSource.token }
       )
       .then((res) => {
