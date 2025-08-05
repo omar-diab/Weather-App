@@ -7,10 +7,17 @@ import CardContent from "./CardContent";
 import Button from "@mui/material/Button";
 
 import useThemeMode from "../context/theme/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const WApp = () => {
   const { mode, toggleTheme } = useThemeMode();
+  const { t, i18n } = useTranslation();
 
+  const toggleLanguage = () => {
+  const newLang = i18n.language === "en" ? "ar" : "en";
+  i18n.changeLanguage(newLang);
+  localStorage.setItem('lang', newLang);
+};
 
   return (
     <Container
@@ -24,17 +31,15 @@ const WApp = () => {
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl">WEATHER</h1>
+        <h1 className="text-2xl">{t("appName")}</h1>
         <div>
-          {mode === "dark" ? (
-            <IconButton onClick={toggleTheme}>
+          <IconButton onClick={toggleTheme}>
+            {mode === "dark" ? (
               <Brightness5OutlinedIcon sx={{ color: "yellow" }} />
-            </IconButton>
-          ) : (
-            <IconButton onClick={toggleTheme}>
+            ) : (
               <Brightness3OutlinedIcon sx={{ color: "darkblue" }} />
-            </IconButton>
-          )}
+            )}
+          </IconButton>
         </div>
       </div>
 
@@ -54,13 +59,15 @@ const WApp = () => {
           <CardContent />
         </Card>
       </div>
+
       {/* Languages */}
       <div className="flex items-center justify-start">
         <Button
           variant="text"
           sx={{ fontSize: 18, p: 1, borderBottom: 1, mt: 1, mx: 2 }}
+          onClick={toggleLanguage}
         >
-          Arabic
+          {t("language")}
         </Button>
       </div>
     </Container>

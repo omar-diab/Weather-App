@@ -7,80 +7,82 @@ import {
 } from "@mui/material";
 import CloudSharpIcon from "@mui/icons-material/CloudSharp";
 
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import axios from "axios";
 import moment from "moment";
+import 'moment/dist/locale/ar';
 
-import { useEffect, useState } from "react";
 import { locations } from "../utils/Locations";
 
 const CardContent = () => {
-  const [selectedLocation, setSelectedLocation] = useState("Palestine");
+  const { t, i18n } = useTranslation();
 
+  const [selectedLocation, setSelectedLocation] = useState("Palestine");
   const [response, setResponse] = useState({
     temp: null,
-    desc: "",
     min: null,
     max: null,
     icon: null,
-    time: ""
+    timestamp: null,
   });
+  const [formattedTime, setFormattedTime] = useState("");
 
+  // Fetch weather data
   useEffect(() => {
     const { lat, lon } = locations[selectedLocation];
-    let cancelTokenSource = axios.CancelToken.source();
+    const cancelTokenSource = axios.CancelToken.source();
 
     axios
       .get(
         `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=a705b3908e57ff99033e3b083d5b6c10`,
-        {
-          cancelToken: cancelTokenSource.token,
-        }
+        { cancelToken: cancelTokenSource.token }
       )
-      .then((response) => {
-        const { dt, timezone } = response.data;
+      .then((res) => {
+        const { dt, timezone } = res.data;
+        const timestamp = (dt + timezone) * 1000;
 
-        const localTime = moment
-        .unix(dt + timezone)
-        .utc()
-        .format("MMMM Do YYYY, h:mm a");
-
-        const Temp = Math.round(response.data.main.temp - 272.15);
-        const Min = Math.round(response.data.main.temp_min - 272.15);
-        const Max = Math.round(response.data.main.temp_max - 272.15);
-        const Desc = response.data.weather[0].description;
-        const Icon = response.data.weather[0].icon;
+        const Temp = Math.round(res.data.main.temp - 273.15);
+        const Min = Math.round(res.data.main.temp_min - 273.15);
+        const Max = Math.round(res.data.main.temp_max - 273.15);
+        const Icon = res.data.weather[0].icon;
 
         setResponse({
           temp: Temp,
-          desc: Desc,
           min: Min,
           max: Max,
           icon: `https://openweathermap.org/img/wn/${Icon}@2x.png`,
-          time: localTime
+          timestamp,
         });
       })
-      .catch((error) => {
-        if (axios.isCancel(error)) {
-          console.log("Request canceled:", error.message);
-        } else {
-          console.error("Request failed:", error);
+      .catch((err) => {
+        if (!axios.isCancel(err)) {
+          console.error("Request failed:", err);
         }
       });
 
-    return () => {
-      cancelTokenSource.cancel("Component unmounted");
-    };
+    return () => cancelTokenSource.cancel("Component unmounted");
   }, [selectedLocation]);
+
+  // Format localized time when language or timestamp changes
+  useEffect(() => {
+    if (response.timestamp) {
+      moment.locale(i18n.language); // ✅ Correct usage
+      const formatted = moment(response.timestamp).format("dddd, MMMM D, YYYY, h:mm A");
+      setFormattedTime(formatted);
+    }
+  }, [response.timestamp, i18n.language]);
 
   return (
     <div className="w-full px-2">
       {/* Location & Date */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-start gap-2">
         <Typography variant="h3" color="text.primary">
-          {selectedLocation}
+          {t(`country.${selectedLocation}`)}
         </Typography>
-        <Typography variant="p" color="text.primary">
-          {response.time}
+        <Typography variant="body2" color="text.primary">
+          {formattedTime}
         </Typography>
       </div>
 
@@ -97,20 +99,17 @@ const CardContent = () => {
             >
               {response.temp}°
             </Typography>
-            <img src={response.icon} alt="icon" />
+            <img src={response.icon} alt="weather icon" />
           </div>
-          <Typography variant="h5" color="text.primary">
-            {response.desc}
-          </Typography>
           <div className="flex items-center justify-center md:justify-start gap-3 mt-2 flex-wrap">
             <Typography variant="h6" color="text.primary">
-              Max: {response.max}°
+              {t("maxTemp")}: {response.max}°
             </Typography>
             <Typography variant="h6" color="text.primary">
               |
             </Typography>
             <Typography variant="h6" color="text.primary">
-              Min: {response.min}°
+              {t("minTemp")}: {response.min}°
             </Typography>
           </div>
         </div>
@@ -127,20 +126,21 @@ const CardContent = () => {
         </div>
       </div>
 
-      {/* Select Dropdown */}
+      {/* Location Selector */}
       <div className="mt-6">
-        <FormControl fullWidth color="text.primary">
-          <InputLabel id="location-select-label">Location</InputLabel>
+        <FormControl fullWidth>
+          <InputLabel id="location-select-label">
+            {t("selectLocation")}
+          </InputLabel>
           <Select
             labelId="location-select-label"
-            id="location-select"
             value={selectedLocation}
-            label="Location"
             onChange={(e) => setSelectedLocation(e.target.value)}
+            label={t("selectLocation")}
           >
             {Object.keys(locations).map((loc) => (
               <MenuItem key={loc} value={loc}>
-                {loc}
+                {t(`country.${loc}`)}
               </MenuItem>
             ))}
           </Select>
