@@ -7,7 +7,64 @@ import {
 } from "@mui/material";
 import CloudSharpIcon from "@mui/icons-material/CloudSharp";
 
+import axios from "axios";
+import moment from "moment";
+
+import { useEffect, useState } from "react";
+import { locations } from "../utils/Locations";
+
 const CardContent = () => {
+  const dataAndTime = moment().format("MMMM Do YYYY, h:mm a");
+
+  const [selectedLocation, setSelectedLocation] = useState("Palestine");
+
+  const [response, setResponse] = useState({
+    temp: null,
+    desc: "",
+    min: null,
+    max: null,
+    icon: null,
+  });
+
+  useEffect(() => {
+    const { lat, lon } = locations[selectedLocation];
+    let cancelTokenSource = axios.CancelToken.source();
+
+    axios
+      .get(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=a705b3908e57ff99033e3b083d5b6c10`,
+        {
+          cancelToken: cancelTokenSource.token,
+        }
+      )
+      .then((response) => {
+        const Temp = Math.round(response.data.main.temp - 272.15);
+        const Min = Math.round(response.data.main.temp_min - 272.15);
+        const Max = Math.round(response.data.main.temp_max - 272.15);
+        const Desc = response.data.weather[0].description;
+        const Icon = response.data.weather[0].icon;
+
+        setResponse({
+          temp: Temp,
+          desc: Desc,
+          min: Min,
+          max: Max,
+          icon: `https://openweathermap.org/img/wn/${Icon}@2x.png`,
+        });
+      })
+      .catch((error) => {
+        if (axios.isCancel(error)) {
+          console.log("Request canceled:", error.message);
+        } else {
+          console.error("Request failed:", error);
+        }
+      });
+
+    return () => {
+      cancelTokenSource.cancel("Component unmounted");
+    };
+  }, [selectedLocation]);
+
   return (
     <div className="w-full px-2">
       {/* Location & Date */}
@@ -16,7 +73,7 @@ const CardContent = () => {
           Palestine
         </Typography>
         <Typography variant="h6" color="text.primary">
-          09/05/2003
+          {dataAndTime}
         </Typography>
       </div>
 
@@ -25,25 +82,28 @@ const CardContent = () => {
       {/* Weather Info */}
       <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-6 w-full">
         <div className="text-center md:text-left w-full">
-          <Typography
-            variant="h1"
-            className="text-[3.5rem] sm:text-[4.5rem] leading-none break-words"
-            color="text.primary"
-          >
-            30°
-          </Typography>
+          <div className="flex justify-center items-start">
+            <Typography
+              variant="h1"
+              className="text-[3.5rem] sm:text-[4.5rem] leading-none break-words"
+              color="text.primary"
+            >
+              {response.temp}°
+            </Typography>
+            <img src={response.icon} alt="icon" />
+          </div>
           <Typography variant="h5" color="text.primary">
-            Broken Cloud
+            {response.desc}
           </Typography>
           <div className="flex items-center justify-center md:justify-start gap-3 mt-2 flex-wrap">
             <Typography variant="h6" color="text.primary">
-              Max: 39°
+              Max: {response.max}°
             </Typography>
             <Typography variant="h6" color="text.primary">
               |
             </Typography>
             <Typography variant="h6" color="text.primary">
-              Min: 25°
+              Min: {response.min}°
             </Typography>
           </div>
         </div>
@@ -67,12 +127,15 @@ const CardContent = () => {
           <Select
             labelId="location-select-label"
             id="location-select"
+            value={selectedLocation}
             label="Location"
-            defaultValue=""
+            onChange={(e) => setSelectedLocation(e.target.value)}
           >
-            <MenuItem value="Palestine">Palestine</MenuItem>
-            <MenuItem value="Egypt">Egypt</MenuItem>
-            <MenuItem value="Jordan">Jordan</MenuItem>
+            {Object.keys(locations).map((loc) => (
+              <MenuItem key={loc} value={loc}>
+                {loc}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </div>

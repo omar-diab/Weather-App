@@ -1,0 +1,17 @@
+export const locations = {
+  Palestine: { lat: 31.9522, lon: 35.2332 },
+  Egypt: { lat: 30.0444, lon: 31.2357 },
+  Jordan: { lat: 31.9454, lon: 35.9284 },
+  Turkey: { lat: 39.9208, lon: 32.8541 },
+  SaudiArabia: { lat: 24.7136, lon: 46.6753 },
+  UAE: { lat: 25.276987, lon: 55.296249 },
+  Germany: { lat: 52.52, lon: 13.405 },
+  France: { lat: 48.8566, lon: 2.3522 },
+  UnitedKingdom: { lat: 51.5074, lon: -0.1278 },
+  UnitedStates: { lat: 40.7128, lon: -74.006 },
+  Canada: { lat: 45.4215, lon: -75.6972 },
+  Japan: { lat: 35.6895, lon: 139.6917 },
+  Brazil: { lat: -23.5505, lon: -46.6333 },
+  India: { lat: 28.6139, lon: 77.209 },
+  Australia: { lat: -33.8688, lon: 151.2093 },
+};

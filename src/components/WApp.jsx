@@ -1,15 +1,16 @@
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
-import useThemeMode from "../context/theme/ThemeContext";
 import IconButton from "@mui/material/IconButton";
 import Brightness3OutlinedIcon from "@mui/icons-material/Brightness3Outlined";
 import Brightness5OutlinedIcon from "@mui/icons-material/Brightness5Outlined";
 import CardContent from "./CardContent";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 
+import useThemeMode from "../context/theme/ThemeContext";
 
 const WApp = () => {
   const { mode, toggleTheme } = useThemeMode();
+
 
   return (
     <Container
@@ -18,7 +19,7 @@ const WApp = () => {
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        paddingY: 8
+        paddingY: 8,
       }}
     >
       {/* Header */}
@@ -27,11 +28,11 @@ const WApp = () => {
         <div>
           {mode === "dark" ? (
             <IconButton onClick={toggleTheme}>
-              <Brightness5OutlinedIcon />
+              <Brightness5OutlinedIcon sx={{ color: "yellow" }} />
             </IconButton>
           ) : (
             <IconButton onClick={toggleTheme}>
-              <Brightness3OutlinedIcon />
+              <Brightness3OutlinedIcon sx={{ color: "darkblue" }} />
             </IconButton>
           )}
         </div>
@@ -55,7 +56,12 @@ const WApp = () => {
       </div>
       {/* Languages */}
       <div className="flex items-center justify-start">
-        <Button variant="text" sx={{ fontSize: 18, p: 1, borderBottom: 1, mt: 1, mx: 2}}>Arabic</Button>
+        <Button
+          variant="text"
+          sx={{ fontSize: 18, p: 1, borderBottom: 1, mt: 1, mx: 2 }}
+        >
+          Arabic
+        </Button>
       </div>
     </Container>
   );
