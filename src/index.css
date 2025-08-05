@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  }
+
+  @font-face {
+    font-family: 'AR';
+    src: url('/Fonts/Arabic/Amiri-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'AR';
+    src: url('/Fonts/Arabic/Amiri-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'AR';
+    src: url('/Fonts/Arabic/Amiri-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'AR';
+    src: url('/Fonts/Arabic/Amiri-BoldItalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+  }
+}
