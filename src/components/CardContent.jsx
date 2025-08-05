@@ -14,8 +14,6 @@ import { useEffect, useState } from "react";
 import { locations } from "../utils/Locations";
 
 const CardContent = () => {
-  const dataAndTime = moment().format("MMMM Do YYYY, h:mm a");
-
   const [selectedLocation, setSelectedLocation] = useState("Palestine");
 
   const [response, setResponse] = useState({
@@ -24,6 +22,7 @@ const CardContent = () => {
     min: null,
     max: null,
     icon: null,
+    time: ""
   });
 
   useEffect(() => {
@@ -38,6 +37,13 @@ const CardContent = () => {
         }
       )
       .then((response) => {
+        const { dt, timezone } = response.data;
+
+        const localTime = moment
+        .unix(dt + timezone)
+        .utc()
+        .format("MMMM Do YYYY, h:mm a");
+
         const Temp = Math.round(response.data.main.temp - 272.15);
         const Min = Math.round(response.data.main.temp_min - 272.15);
         const Max = Math.round(response.data.main.temp_max - 272.15);
@@ -50,6 +56,7 @@ const CardContent = () => {
           min: Min,
           max: Max,
           icon: `https://openweathermap.org/img/wn/${Icon}@2x.png`,
+          time: localTime
         });
       })
       .catch((error) => {
@@ -70,10 +77,10 @@ const CardContent = () => {
       {/* Location & Date */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-start gap-2">
         <Typography variant="h3" color="text.primary">
-          Palestine
+          {selectedLocation}
         </Typography>
-        <Typography variant="h6" color="text.primary">
-          {dataAndTime}
+        <Typography variant="p" color="text.primary">
+          {response.time}
         </Typography>
       </div>
 
